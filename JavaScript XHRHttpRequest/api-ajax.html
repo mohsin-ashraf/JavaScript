@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+  <title>ICNDB Ajax</title>
+</head>
+
+<body>
+
+  <div class="container mt-5">
+    <h1 class="display-3">Jokes With Ajax</h1>
+    <form>
+      <div class="form-group">
+        <label for="number">Number of Jokes</label>
+        <input type="number" class="form-control" name="number" id="number">
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-outline-info" id="get-jokes">Get Jokes</button>
+      </div>
+    </form>
+
+    <ul class="list-group" id="jokes"></ul>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+  <script>
+    document.querySelector("#get-jokes").addEventListener('click', getJokes);
+
+
+    // getJokes
+    function getJokes(e) {
+      const number = document.querySelector("#number").value;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `http://api.icndb.com/jokes/random/${number}`, true);
+      xhr.onload = function () {
+        if (this.status === 200) {
+          const responseText = JSON.parse(this.responseText);
+
+          let output = '';
+
+          if (responseText.type === 'success') {
+            responseText.value.forEach(joke => {
+              output += `
+              <li class="list-group-item">${joke.joke}</li>
+            `
+            });
+          } else {
+            output += '<li class="list-group-item">Something went wrong<li>'
+          }
+
+          document.querySelector("#jokes").innerHTML = output;
+        }
+      }
+
+      xhr.send();
+      e.preventDefault();
+    }
+  </script>
+</body>
+
+</html>
